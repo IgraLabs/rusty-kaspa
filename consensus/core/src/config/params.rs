@@ -731,5 +731,5 @@ pub const DEVNET_PARAMS: Params = Params {
     pruning_proof_m: 1000,
 
     crescendo: CRESCENDO,
-    crescendo_activation: ForkActivation::never(),
+    crescendo_activation: ForkActivation::always(),
 };
