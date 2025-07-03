@@ -45,6 +45,7 @@ pub enum Scope {
     VirtualDaaScoreChanged,
     PruningPointUtxoSetOverride,
     NewBlockTemplate,
+    PruningPointMoved,
 }
 }
 
@@ -261,6 +262,15 @@ impl Serializer for NewBlockTemplateScope {
 }
 
 impl Deserializer for NewBlockTemplateScope {
+    fn deserialize<R: std::io::Read>(reader: &mut R) -> std::io::Result<Self> {
+        let _version = load!(u16, reader)?;
+        Ok(Self {})
+    }
+}
+
+#[derive(Clone, Display, Debug, Default, PartialEq, Eq, Serialize, Deserialize, BorshSerialize, BorshDeserialize)]
+pub struct PruningPointMovedScope {}
+impl Deserializer for PruningPointMovedScope {
     fn deserialize<R: std::io::Read>(reader: &mut R) -> std::io::Result<Self> {
         let _version = load!(u16, reader)?;
         Ok(Self {})

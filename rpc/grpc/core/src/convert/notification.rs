@@ -1,10 +1,9 @@
 use crate::protowire::{
-    kaspad_response::Payload, BlockAddedNotificationMessage, KaspadResponse, NewBlockTemplateNotificationMessage, RpcNotifyCommand,
-};
-use crate::protowire::{
-    FinalityConflictNotificationMessage, FinalityConflictResolvedNotificationMessage, NotifyPruningPointUtxoSetOverrideRequestMessage,
-    NotifyPruningPointUtxoSetOverrideResponseMessage, NotifyUtxosChangedRequestMessage, NotifyUtxosChangedResponseMessage,
-    PruningPointUtxoSetOverrideNotificationMessage, SinkBlueScoreChangedNotificationMessage,
+    kaspad_response::Payload, BlockAddedNotificationMessage, FinalityConflictNotificationMessage,
+    FinalityConflictResolvedNotificationMessage, KaspadResponse, NewBlockTemplateNotificationMessage,
+    NotifyPruningPointUtxoSetOverrideRequestMessage, NotifyPruningPointUtxoSetOverrideResponseMessage,
+    NotifyUtxosChangedRequestMessage, NotifyUtxosChangedResponseMessage, PruningPointMovedNotificationMessage,
+    PruningPointUtxoSetOverrideNotificationMessage, RpcNotifyCommand, SinkBlueScoreChangedNotificationMessage,
     StopNotifyingPruningPointUtxoSetOverrideRequestMessage, StopNotifyingPruningPointUtxoSetOverrideResponseMessage,
     StopNotifyingUtxosChangedRequestMessage, StopNotifyingUtxosChangedResponseMessage, UtxosChangedNotificationMessage,
     VirtualChainChangedNotificationMessage, VirtualDaaScoreChangedNotificationMessage,
@@ -34,6 +33,7 @@ from!(item: &kaspa_rpc_core::Notification, Payload, {
         Notification::PruningPointUtxoSetOverride(ref notification) => {
             Payload::PruningPointUtxoSetOverrideNotification(notification.into())
         }
+        Notification::PruningPointMoved(ref notification) => Payload::PruningPointMovedNotification(notification.into())
     }
 });
 
@@ -89,6 +89,11 @@ from!(_item: &StopNotifyingPruningPointUtxoSetOverrideRequestMessage, NotifyPrun
     Self { command: Command::Stop.into() }
 });
 
+from!(item: &kaspa_rpc_core::PruningPointMovedNotification, PruningPointMovedNotificationMessage, {
+Self {
+    new_pruning_point: item.new_pruning_point.to_string(),
+}
+});
 // ----------------------------------------------------------------------------
 // protowire to rpc_core
 // ----------------------------------------------------------------------------
@@ -117,6 +122,8 @@ try_from!(item: &Payload, kaspa_rpc_core::Notification, {
         Payload::PruningPointUtxoSetOverrideNotification(ref notification) => {
             Notification::PruningPointUtxoSetOverride(notification.try_into()?)
         }
+        Payload::PruningPointMovedNotification(ref notification) =>
+            Notification::PruningPointMoved(notification.try_into()?),
         _ => Err(RpcError::UnsupportedFeature)?,
     }
 });
@@ -170,6 +177,10 @@ try_from!(item: &VirtualDaaScoreChangedNotificationMessage, kaspa_rpc_core::Virt
 });
 
 try_from!(&PruningPointUtxoSetOverrideNotificationMessage, kaspa_rpc_core::PruningPointUtxoSetOverrideNotification);
+
+try_from!(item: &PruningPointMovedNotificationMessage, kaspa_rpc_core::PruningPointMovedNotification, {
+    Self { new_pruning_point: item.new_pruning_point.parse()? }
+});
 
 from!(item: RpcNotifyCommand, Command, {
     match item {

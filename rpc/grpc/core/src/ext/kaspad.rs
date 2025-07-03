@@ -2,9 +2,9 @@ use kaspa_notify::{scope::Scope, subscription::Command};
 
 use crate::protowire::{
     kaspad_request, kaspad_response, KaspadRequest, KaspadResponse, NotifyBlockAddedRequestMessage,
-    NotifyFinalityConflictRequestMessage, NotifyNewBlockTemplateRequestMessage, NotifyPruningPointUtxoSetOverrideRequestMessage,
-    NotifySinkBlueScoreChangedRequestMessage, NotifyUtxosChangedRequestMessage, NotifyVirtualChainChangedRequestMessage,
-    NotifyVirtualDaaScoreChangedRequestMessage,
+    NotifyFinalityConflictRequestMessage, NotifyNewBlockTemplateRequestMessage, NotifyPruningPointMovedRequestMessage,
+    NotifyPruningPointUtxoSetOverrideRequestMessage, NotifySinkBlueScoreChangedRequestMessage, NotifyUtxosChangedRequestMessage,
+    NotifyVirtualChainChangedRequestMessage, NotifyVirtualDaaScoreChangedRequestMessage,
 };
 
 impl KaspadRequest {
@@ -64,6 +64,11 @@ impl kaspad_request::Payload {
                     command: command.into(),
                 })
             }
+            Scope::PruningPointMoved(_) => {
+                kaspad_request::Payload::NotifyPruningPointMovedRequest(NotifyPruningPointMovedRequestMessage {
+                    command: command.into(),
+                })
+            }
         }
     }
 
@@ -79,6 +84,7 @@ impl kaspad_request::Payload {
                 | Payload::NotifyVirtualDaaScoreChangedRequest(_)
                 | Payload::NotifyPruningPointUtxoSetOverrideRequest(_)
                 | Payload::NotifyNewBlockTemplateRequest(_)
+                | Payload::NotifyPruningPointMovedRequest(_)
                 | Payload::StopNotifyingUtxosChangedRequest(_)
                 | Payload::StopNotifyingPruningPointUtxoSetOverrideRequest(_)
         )
@@ -107,6 +113,7 @@ impl kaspad_response::Payload {
             Payload::SinkBlueScoreChangedNotification(_) => true,
             Payload::VirtualDaaScoreChangedNotification(_) => true,
             Payload::PruningPointUtxoSetOverrideNotification(_) => true,
+            Payload::PruningPointMovedNotification(_) => true,
             Payload::NewBlockTemplateNotification(_) => true,
             _ => false,
         }

@@ -279,6 +279,7 @@ impl Consensus {
             pruning_lock.clone(),
             config.clone(),
             is_consensus_exiting.clone(),
+            notification_root.clone(),
         ));
 
         // Ensure the relations stores are initialized

@@ -34,11 +34,14 @@ use kaspa_consensus_core::{
     trusted::ExternalGhostdagData,
     BlockHashMap, BlockHashSet, BlockLevel,
 };
+use kaspa_consensus_notify::notification::{Notification, PruningPointMovedNotification};
+use kaspa_consensus_notify::root::ConsensusNotificationRoot;
 use kaspa_consensusmanager::SessionLock;
 use kaspa_core::{debug, info, trace, warn};
 use kaspa_database::prelude::{BatchDbWriter, MemoryWriter, StoreResultExtensions, DB};
 use kaspa_hashes::Hash;
 use kaspa_muhash::MuHash;
+use kaspa_notify::notifier::Notify;
 use kaspa_utils::iter::IterExtensions;
 use parking_lot::RwLockUpgradableReadGuard;
 use rocksdb::WriteBatch;
@@ -82,6 +85,9 @@ pub struct PruningProcessor {
 
     // Signals
     is_consensus_exiting: Arc<AtomicBool>,
+
+    // Notifier
+    notification_root: Arc<ConsensusNotificationRoot>,
 }
 
 impl Deref for PruningProcessor {
@@ -101,6 +107,7 @@ impl PruningProcessor {
         pruning_lock: SessionLock,
         config: Arc<Config>,
         is_consensus_exiting: Arc<AtomicBool>,
+        notification_root: Arc<ConsensusNotificationRoot>,
     ) -> Self {
         Self {
             receiver,
@@ -113,6 +120,7 @@ impl PruningProcessor {
             pruning_lock,
             config,
             is_consensus_exiting,
+            notification_root,
         }
     }
 
@@ -214,6 +222,9 @@ impl PruningProcessor {
 
             // Finally, prune data in the new pruning point past
             self.prune(new_pruning_point, adjusted_retention_period_root);
+            self.notification_root
+                .notify(Notification::PruningPointMoved(PruningPointMovedNotification::new(new_pruning_point)))
+                .expect("expecting an open unbounded channel");
         } else if new_candidate != current_pruning_info.candidate {
             let mut pruning_point_write = RwLockUpgradableReadGuard::upgrade(pruning_point_read);
             pruning_point_write.set(current_pruning_info.pruning_point, new_candidate, current_pruning_info.index).unwrap();

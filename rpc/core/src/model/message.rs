@@ -2,6 +2,7 @@ use crate::model::*;
 use borsh::{BorshDeserialize, BorshSerialize};
 use kaspa_consensus_core::api::stats::BlockCount;
 use kaspa_core::debug;
+use kaspa_hashes::Hash;
 use kaspa_notify::subscription::{context::SubscriptionContext, single::UtxosChangedSubscription, Command};
 use kaspa_utils::hex::ToHex;
 use serde::{Deserialize, Serialize};
@@ -3458,6 +3459,82 @@ impl Deserializer for NewBlockTemplateNotification {
     fn deserialize<R: std::io::Read>(reader: &mut R) -> std::io::Result<Self> {
         let _version = load!(u16, reader)?;
         Ok(Self {})
+    }
+}
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// PruningPointMovedNotification
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct NotifyPruningPointMovedRequest {
+    pub command: Command,
+}
+
+impl NotifyPruningPointMovedRequest {
+    pub fn new(command: Command) -> Self {
+        Self { command }
+    }
+}
+
+impl Serializer for NotifyPruningPointMovedRequest {
+    fn serialize<W: std::io::Write>(&self, writer: &mut W) -> std::io::Result<()> {
+        store!(u16, &1, writer)?;
+        store!(Command, &self.command, writer)?;
+        Ok(())
+    }
+}
+
+impl Deserializer for NotifyPruningPointMovedRequest {
+    fn deserialize<R: std::io::Read>(reader: &mut R) -> std::io::Result<Self> {
+        let _version = load!(u16, reader)?;
+        let command = load!(Command, reader)?;
+        Ok(Self { command })
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct NotifyPruningPointMovedResponse {}
+
+impl Serializer for NotifyPruningPointMovedResponse {
+    fn serialize<W: std::io::Write>(&self, writer: &mut W) -> std::io::Result<()> {
+        store!(u16, &1, writer)?;
+        Ok(())
+    }
+}
+
+impl Deserializer for NotifyPruningPointMovedResponse {
+    fn deserialize<R: std::io::Read>(reader: &mut R) -> std::io::Result<Self> {
+        let _version = load!(u16, reader)?;
+        Ok(Self {})
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PruningPointMovedNotification {
+    pub new_pruning_point: Hash,
+}
+
+impl PruningPointMovedNotification {
+    pub fn new(new_pruning_point: Hash) -> Self {
+        Self { new_pruning_point }
+    }
+}
+impl Serializer for PruningPointMovedNotification {
+    fn serialize<W: std::io::Write>(&self, writer: &mut W) -> std::io::Result<()> {
+        store!(u16, &1, writer)?;
+        store!(Hash, &self.new_pruning_point, writer)?;
+        Ok(())
+    }
+}
+
+impl Deserializer for PruningPointMovedNotification {
+    fn deserialize<R: std::io::Read>(reader: &mut R) -> std::io::Result<Self> {
+        let _version = load!(u16, reader)?;
+        let new_pruning_point = load!(Hash, reader)?;
+        Ok(Self::new(new_pruning_point))
     }
 }
 

@@ -66,6 +66,7 @@ message KaspadRequest {
     GetFeeEstimateExperimentalRequestMessage getFeeEstimateExperimentalRequest = 1108;
     GetCurrentBlockColorRequestMessage getCurrentBlockColorRequest = 1110;
     GetUtxoReturnAddressRequestMessage GetUtxoReturnAddressRequest = 1112;
+    NotifyPruningPointMovedRequestMessage notifyPruningPointMovedRequest = 1114;
   }
 }
 
@@ -119,19 +120,21 @@ message KaspadResponse {
     NotifyNewBlockTemplateResponseMessage notifyNewBlockTemplateResponse = 1082;
     NewBlockTemplateNotificationMessage newBlockTemplateNotification = 1083;
     GetMempoolEntriesByAddressesResponseMessage getMempoolEntriesByAddressesResponse = 1085;
-    GetCoinSupplyResponseMessage getCoinSupplyResponse= 1087;
-    PingResponseMessage pingResponse= 1089;
-    GetMetricsResponseMessage getMetricsResponse= 1091;
+    GetCoinSupplyResponseMessage getCoinSupplyResponse = 1087;
+    PingResponseMessage pingResponse = 1089;
+    GetMetricsResponseMessage getMetricsResponse = 1091;
     GetServerInfoResponseMessage getServerInfoResponse = 1093;
     GetSyncStatusResponseMessage getSyncStatusResponse = 1095;
     GetDaaScoreTimestampEstimateResponseMessage getDaaScoreTimestampEstimateResponse = 1097;
     SubmitTransactionReplacementResponseMessage submitTransactionReplacementResponse = 1101;
-    GetConnectionsResponseMessage getConnectionsResponse= 1103;
-    GetSystemInfoResponseMessage getSystemInfoResponse= 1105;
+    GetConnectionsResponseMessage getConnectionsResponse = 1103;
+    GetSystemInfoResponseMessage getSystemInfoResponse = 1105;
     GetFeeEstimateResponseMessage getFeeEstimateResponse = 1107;
     GetFeeEstimateExperimentalResponseMessage getFeeEstimateExperimentalResponse = 1109;
     GetCurrentBlockColorResponseMessage getCurrentBlockColorResponse = 1111;
     GetUtxoReturnAddressResponseMessage GetUtxoReturnAddressResponse = 1113;
+    NotifyPruningPointMovedResponseMessage notifyPruningPointMovedResponse = 1115;
+    PruningPointMovedNotificationMessage pruningPointMovedNotification = 1116;
   }
 }
 

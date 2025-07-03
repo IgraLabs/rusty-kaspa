@@ -48,6 +48,9 @@ pub enum Notification {
 
     #[display(fmt = "NewBlockTemplate notification")]
     NewBlockTemplate(NewBlockTemplateNotification),
+
+    #[display(fmt = "Pruning Point Moved notification")]
+    PruningPointMoved(PruningPointMovedNotification),
 }
 }
 
@@ -64,6 +67,7 @@ impl Notification {
             Notification::VirtualDaaScoreChanged(v) => to_value(&v),
             Notification::SinkBlueScoreChanged(v) => to_value(&v),
             Notification::VirtualChainChanged(v) => to_value(&v),
+            Notification::PruningPointMoved(v) => to_value(&v),
         }
     }
 }
@@ -157,6 +161,10 @@ impl Serializer for Notification {
                 store!(u16, &8, writer)?;
                 serialize!(NewBlockTemplateNotification, notification, writer)?;
             }
+            Notification::PruningPointMoved(notification) => {
+                store!(u16, &9, writer)?;
+                serialize!(PruningPointMovedNotification, notification, writer)?;
+            }
         }
         Ok(())
     }
@@ -201,6 +209,10 @@ impl Deserializer for Notification {
             8 => {
                 let notification = deserialize!(NewBlockTemplateNotification, reader)?;
                 Ok(Notification::NewBlockTemplate(notification))
+            }
+            9 => {
+                let notification = deserialize!(PruningPointMovedNotification, reader)?;
+                Ok(Notification::PruningPointMoved(notification))
             }
             _ => Err(std::io::Error::new(std::io::ErrorKind::InvalidData, "Invalid variant")),
         }

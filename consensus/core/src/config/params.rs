@@ -665,8 +665,8 @@ pub const DEVNET_PARAMS: Params = Params {
     prior_max_block_parents: 10,
     prior_mergeset_size_limit: (LEGACY_DEFAULT_GHOSTDAG_K as u64) * 10,
     prior_merge_depth: 3600,
-    prior_finality_depth: 86400,
-    prior_pruning_depth: 185798,
+    prior_finality_depth: 86, // TODO: This is a temporary value, should be set to 86400
+    prior_pruning_depth: 185, // TODO: This is a temporary value, should be set to 185798
     coinbase_payload_script_public_key_max_len: 150,
     max_coinbase_payload_len: 204,
 

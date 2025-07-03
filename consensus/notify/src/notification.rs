@@ -42,6 +42,9 @@ pub enum Notification {
 
     #[display(fmt = "NewBlockTemplate notification")]
     NewBlockTemplate(NewBlockTemplateNotification),
+
+    #[display(fmt = "Pruning Point Moved notification")]
+    PruningPointMoved(PruningPointMovedNotification),
 }
 }
 
@@ -181,3 +184,14 @@ pub struct PruningPointUtxoSetOverrideNotification {}
 
 #[derive(Debug, Clone)]
 pub struct NewBlockTemplateNotification {}
+
+#[derive(Debug, Clone)]
+pub struct PruningPointMovedNotification {
+    pub new_pruning_point: Hash,
+}
+
+impl PruningPointMovedNotification {
+    pub fn new(new_pruning_point: Hash) -> Self {
+        Self { new_pruning_point }
+    }
+}
