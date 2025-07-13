@@ -8,6 +8,7 @@ use kaspa_consensus_core::{constants::MAX_SOMPI, header::Header, subnets::Subnet
 use kaspa_core::{assert_match, info};
 use kaspa_grpc_core::ops::KaspadPayloadOps;
 use kaspa_hashes::Hash;
+use kaspa_notify::scope::PruningPointMovedScope;
 use kaspa_notify::{
     connection::{ChannelConnection, ChannelType},
     scope::{
@@ -732,6 +733,13 @@ async fn sanity_test() {
                         .start_notify(id, VirtualChainChangedScope { include_accepted_transaction_ids: false }.into())
                         .await
                         .unwrap();
+                })
+            }
+            KaspadPayloadOps::NotifyPruningPointMoved => {
+                let rpc_client = client.clone();
+                let id = listener_id;
+                tst!(op, {
+                    rpc_client.start_notify(id, PruningPointMovedScope {}.into()).await.unwrap();
                 })
             }
             KaspadPayloadOps::StopNotifyingUtxosChanged => {
