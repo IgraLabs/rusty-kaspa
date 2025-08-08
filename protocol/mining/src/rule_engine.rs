@@ -69,8 +69,12 @@ impl MiningRuleEngine {
                 let finality_point = session.async_finality_point().await;
                 let finality_point_timestamp = session.async_get_header(finality_point).await.unwrap().timestamp;
 
+                let pruning_point = session.async_pruning_point().await;
+                let pruning_point_timestamp = session.async_get_header(pruning_point).await.unwrap().timestamp;
+
                 let extra_data = ExtraData {
                     finality_point_timestamp,
+                    pruning_point_timestamp,
                     target_time_per_block: self.config.target_time_per_block().get(sink_daa_timestamp.daa_score),
                     has_sufficient_peer_connectivity: self.has_sufficient_peer_connectivity(),
                     finality_duration: self.config.finality_duration_in_milliseconds().get(sink_daa_timestamp.daa_score),

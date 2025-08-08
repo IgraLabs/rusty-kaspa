@@ -82,7 +82,8 @@ impl MiningRule for SyncRateRule {
             (self.total_received_blocks.load(Ordering::SeqCst) as f64) / (self.total_expected_blocks.load(Ordering::SeqCst) as f64);
 
         // Finality point is considered "recent" if it is within 3 finality durations from the current time
-        let is_finality_recent = extra_data.finality_point_timestamp >= unix_now().saturating_sub(extra_data.finality_duration * 3);
+        let is_finality_recent = extra_data.finality_point_timestamp >= unix_now().saturating_sub(extra_data.finality_duration * 3)
+            && extra_data.finality_point_timestamp > extra_data.pruning_point_timestamp;
 
         trace!(
             "Sync rate: {:.2} | Finality point recent: {} | Elapsed time: {}s | Connected: {} | Found/Expected blocks: {}/{}",
@@ -144,6 +145,7 @@ mod tests {
             elapsed_time: std::time::Duration::from_secs(10),
             target_time_per_block: 100, // 10bps value
             finality_point_timestamp: unix_now(),
+            pruning_point_timestamp: unix_now().saturating_sub(1000 * 3),
             finality_duration: 1000,
             has_sufficient_peer_connectivity: true,
         };
@@ -194,6 +196,7 @@ mod tests {
             elapsed_time: std::time::Duration::from_secs(10),
             target_time_per_block: 100,                                        // 10bps value
             finality_point_timestamp: unix_now().saturating_sub(1000 * 3) - 1, // the millisecond right before timestamp is "old enough"
+            pruning_point_timestamp: unix_now().saturating_sub(1000 * 6),
             finality_duration: 1000,
             has_sufficient_peer_connectivity: true,
         };
