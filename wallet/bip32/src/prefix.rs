@@ -39,6 +39,11 @@ impl Prefix {
     /// `ktub` prefix
     pub const KTUB: Self = Self::from_parts_unchecked("ktub", 0x0390a241);
 
+    pub const KDRV: Self = Self::from_parts_unchecked("kdrv", 0x038b3d80);
+    pub const KDUB: Self = Self::from_parts_unchecked("kdub", 0x038b41ba);
+    pub const KSRV: Self = Self::from_parts_unchecked("ksrv", 0x03904242);
+    pub const KSUB: Self = Self::from_parts_unchecked("ksub", 0x0390467d);
+
     /// `tprv` prefix
     pub const TPRV: Self = Self::from_parts_unchecked("tprv", 0x04358394);
 
@@ -114,7 +119,8 @@ impl Prefix {
 
     /// Is this a public key?
     pub fn is_public(self) -> bool {
-        &self.chars[1..] == b"pub" || &self.chars[1..] == b"tub"
+        let last_3_chars = &self.chars[1..].try_into().expect("prefix with incorrect length");
+        [b"pub", b"tub", b"dub", b"sub"].contains(last_3_chars)
     }
 
     /// Is this a private key?
@@ -240,8 +246,8 @@ impl From<NetworkId> for Prefix {
         let network_type = value.network_type();
         match network_type {
             NetworkType::Mainnet => Prefix::KPUB,
-            NetworkType::Devnet => Prefix::KTUB,
-            NetworkType::Simnet => Prefix::KTUB,
+            NetworkType::Devnet => Prefix::KDUB,
+            NetworkType::Simnet => Prefix::KSUB,
             NetworkType::Testnet => Prefix::KTUB,
         }
     }

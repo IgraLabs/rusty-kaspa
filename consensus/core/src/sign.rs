@@ -5,6 +5,7 @@ use crate::{
     },
     tx::{SignableTransaction, VerifiableTransaction},
 };
+use borsh::{BorshDeserialize, BorshSerialize};
 use itertools::Itertools;
 use std::collections::BTreeMap;
 use std::iter::once;
@@ -27,6 +28,7 @@ pub enum Error {
 
 /// A wrapper enum that represents the transaction signed state. A transaction
 /// contained by this enum can be either fully signed or partially signed.
+#[derive(Clone, Debug, PartialEq, Eq, BorshSerialize, BorshDeserialize)]
 pub enum Signed {
     Fully(SignableTransaction),
     Partially(SignableTransaction),
@@ -71,6 +73,14 @@ impl Signed {
 
     /// Returns the transaction regardless of whether it is fully or partially signed
     pub fn unwrap(self) -> SignableTransaction {
+        match self {
+            Signed::Fully(tx) => tx,
+            Signed::Partially(tx) => tx,
+        }
+    }
+
+    /// Returns the transaction regardless of whether it is fully or partially signed
+    pub fn unwrap_ref(&self) -> &SignableTransaction {
         match self {
             Signed::Fully(tx) => tx,
             Signed::Partially(tx) => tx,

@@ -4,6 +4,7 @@ use crate::{
     subnets::SUBNETWORK_ID_SIZE,
     tx::{ScriptPublicKey, Transaction, TransactionInput, TransactionOutput, UtxoEntry, VerifiableTransaction},
 };
+use borsh::{BorshDeserialize, BorshSerialize};
 use kaspa_hashes::HASH_SIZE;
 
 // transaction_estimated_serialized_size is the estimated size of a transaction in some
@@ -146,7 +147,7 @@ impl From<&TransactionOutput> for UtxoCell {
     }
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, BorshSerialize, BorshDeserialize)]
 pub struct NonContextualMasses {
     /// Compute mass
     pub compute_mass: u64,

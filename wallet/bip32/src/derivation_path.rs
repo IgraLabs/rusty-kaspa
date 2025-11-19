@@ -2,6 +2,7 @@
 
 use crate::{ChildNumber, Error, Result};
 //use alloc::vec::{self, Vec};
+use borsh::{BorshDeserialize, BorshSerialize};
 use core::{
     fmt::{self, Display},
     str::FromStr,
@@ -12,7 +13,7 @@ use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 const PREFIX: &str = "m";
 
 /// Derivation paths within a hierarchical keyspace.
-#[derive(Clone, Debug, Default, Eq, PartialEq)]
+#[derive(Clone, Debug, Default, Eq, PartialEq, Hash, PartialOrd, Ord, BorshSerialize, BorshDeserialize)]
 pub struct DerivationPath {
     path: Vec<ChildNumber>,
 }
